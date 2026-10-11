@@ -1,0 +1,10 @@
+{
+  "name": "Legion Library",
+  "author": "Custom Decky Plugins",
+  "flags": [],
+  "api_version": 1,
+  "publish": {
+    "tags": ["library", "customization"],
+    "description": "Organize installed Steam games and Heroic, emulator, and PC Steam shortcuts in a unified library."
+  }
+}
