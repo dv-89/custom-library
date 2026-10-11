@@ -15,6 +15,7 @@ The automated suite covers:
 - Bounded file reads and preservation of reference library files.
 - Preference validation, atomic round trips, corrupt preference warnings, and rejected writes preserving previous settings.
 - Favorite-first sorting, category override filters, and case-insensitive search.
+- Custom-before-cached/default artwork priority, correct Steam method receiver/App ID, missing/throwing APIs, duplicate/invalid URLs, and header preference defaults/validation.
 
 The desktop demo validates the shared interface with mouse/keyboard. It cannot establish controller focus behavior, Steam internal route compatibility, Decky RPC deployment, or actual game launching.
 
@@ -30,7 +31,7 @@ Record the Legion Go S's SteamOS, Steam client, and Decky versions before testin
 6. Favorite a game, change its category, reset the suggestion, close/reopen the page, then reboot. Confirm saved preferences persist. Switch profile and confirm shortcuts are not merged.
 7. Open each of the four source examples in Steam. Confirm the right game page and existing Play workflow. Start and exit each game through Steam. Verify Proton and controller settings are unchanged.
 8. Test a missing/broken shortcut and a Heroic login/update requirement. Steam should report the launch issue; the plugin must not claim the game is ready offline. Try Offline Mode with a title already known to support it.
-9. Test the device's native resolution and any preferred UI scaling. Confirm tabs, search, card titles, settings, and focused controls remain visible. Large-library scan/focus/scroll performance is not yet benchmarked.
+9. Test the device's native resolution and preferred UI scaling with the performance overlay enabled. Confirm tabs, search, card titles, settings, and focused controls remain visible while scrolling. Adjust **Setup & status → Display & artwork → Space for Steam / performance header** and confirm it survives reopening/reboot. Test a built-in Steam poster, a SteamGridDB custom portrait, and a non-Steam custom poster. Change an image in SteamGridDB, press Refresh, and confirm it updates. Try missing artwork and disconnected networking; unavailable posters must retain the color cover. Large-library scan/focus/scroll performance is not yet benchmarked.
 10. Reload/uninstall the plugin. Confirm the route is removed, normal Steam Home works, and existing game library files are unchanged. Reinstall and check retained preferences if Decky preserves them.
 
 ## Troubleshooting
@@ -43,7 +44,9 @@ Record the Legion Go S's SteamOS, Steam client, and Decky versions before testin
 | Wrong source label | Open the card and choose its category; source suggestions do not inspect launcher accounts |
 | Wrong game's page | Verify the selected profile is the current Steam account and the shortcut still exists; record its App ID and client versions |
 | Save fails | Check the plugin's Decky settings directory permissions and diagnostic message; do not edit Steam files to fix it |
-| Cards lack real artwork | Expected in 0.1.0: local color covers and initials are used |
+| Cards lack real artwork | Confirm the current Steam account/profile and artwork in Steam's own library; press Refresh after SteamGridDB changes. Missing artwork or unavailable Steam methods fall back to initials. Record Steam/Decky versions if existing art is not reused |
+| Performance header covers controls | Increase header spacing in Setup & status; larger performance panels can still cover cards |
+| Reinstall still shows the old interface | Use the installable release ZIP URL, confirm overwrite/reinstall if prompted, then restart Decky/Gaming Mode. The October 11 ZIP keeps version 0.1.0, so the version label alone cannot distinguish it |
 | Native Home does not change | Expected: this release is opened through Decky; native Home integration is deferred |
 | Controller focus or navigation breaks after update | Record Steam/Decky versions and the failed checklist step; uninstall the plugin to restore the baseline UI |
 

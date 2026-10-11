@@ -14,6 +14,7 @@ export interface Preferences {
   favorites: string[];
   overrides: Record<string, Source>;
   profile: string;
+  header_offset?: number;
 }
 export interface Catalog {
   games: Game[];
@@ -29,7 +30,9 @@ export interface LibraryAPI {
   open(game: Game): void;
   back(): void;
   demo?: boolean;
+  posterSources?(game: Game): string[];
 }
+export const DEFAULT_HEADER_OFFSET = 96;
 export function gameSource(game: Game, preferences: Preferences): Source {
   return preferences.overrides[game.id] ?? game.source;
 }

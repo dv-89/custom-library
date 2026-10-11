@@ -19,11 +19,12 @@ The plugin opens Steam's game page instead of invoking a raw executable. Steam t
 | `src/index.tsx` | Decky lifecycle, RPC calls, route registration, native UI controls and game-page navigation |
 | `src/Library.tsx` | Shared library/detail/setup interface, loading/error states and preference edits |
 | `src/model.ts` | Types, source resolution, filtering and favorite-first sorting |
+| `src/artwork.ts`, `src/Poster.tsx` | Guarded Steam artwork lookup, custom-first priority, image retries and monogram fallback |
 | `main.py` | Decky RPC boundary, settings validation, atomic persistence, asynchronous worker handoff |
 | `py_modules/legion_catalog.py` | Bounded text/binary VDF parsing and local read-only discovery |
 | `preview/` | Explicit fictional demo using the same library UI with browser controls |
 
-Decky's sandbox adds the plugin's `py_modules/` directory to Python's import path. The backend therefore ships its discovery module there rather than depending on the working directory. No subprocesses, shell commands, third-party launcher APIs, network requests, or root privileges are used by the plugin runtime.
+Decky's sandbox adds the plugin's `py_modules/` directory to Python's import path. The backend therefore ships its discovery module there rather than depending on the working directory. The backend uses no subprocesses, shell commands, third-party launcher APIs, network requests, or root privileges. The frontend displays URLs supplied by Steam's artwork store, which can include remote standard covers.
 
 ## Integration choices
 
@@ -33,9 +34,13 @@ Heroic/emulator categories are suggestions from shortcut executable, launch opti
 
 This does not automatically populate every game in Epic, every ROM on disk, or every Windows executable. Later adapters should begin by inspecting the actual handheld's launcher/configuration layouts and confirming installed/title/launch mappings; filenames and configuration schemas should not be guessed here.
 
+The October 11 update resolves each displayed App ID through `window.appStore.GetAppOverviewByAppID`. It tries custom vertical and landscape capsules (including SteamGridDB-applied artwork), cached vertical/default vertical covers, then cached/default landscape covers. Each optional method is guarded, and image-load errors advance to the next candidate. Refresh remounts posters to re-resolve changed artwork. This reuses the current Steam account's artwork without reading another plugin's settings or calling SteamGridDB's service. The methods are Steam internals exposed in @decky/ui's type declarations, so real-device compatibility remains pending.
+
+Header clearance is a persisted 0–240 pixel preference with a 96 pixel default for older settings. A fixed-height outer layout reserves the space; only the inner content scrolls. It does not detect or control the performance overlay. Taller overlay panels may need a larger setting and can still cover cards.
+
 ## Next iteration after hardware validation
 
 1. Confirm route loading, D-pad/joystick focus, scrolling, text entry, B behavior, and game-page handoff with the device's installed Steam and Decky versions.
 2. Inspect real shortcut samples and improve category suggestions; add explicit hide/custom collection controls for tools and launcher-only entries.
-3. Resolve local Steam artwork safely, retaining the current color-cover fallback.
+3. Validate built-in and custom SteamGridDB artwork, offline fallbacks, and performance-overlay spacing on the device.
 4. Consider optional Home integration only with a supported Steam/Decky version range, conflict handling, and an explicit reversible toggle.

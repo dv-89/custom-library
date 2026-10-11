@@ -2,6 +2,7 @@ import { ButtonItem, DialogButton, Dropdown, Focusable, Navigation, PanelSection
 import { callable, definePlugin, routerHook } from "@decky/api";
 import { Library, Controls } from "./Library";
 import { Catalog, LibraryAPI, Preferences } from "./model";
+import { steamPosterSources, ArtworkStore } from "./artwork";
 
 const ROUTE = "/legion-library";
 const getCatalog = callable<[], Catalog>("get_catalog");
@@ -11,6 +12,7 @@ const api: LibraryAPI = {
   save: savePreferences,
   open: game => { Navigation.Navigate(`/library/app/${game.appid}`); Navigation.CloseSideMenus(); },
   back: () => Navigation.NavigateBack(),
+  posterSources: game => steamPosterSources(game, window.appStore as unknown as ArtworkStore | undefined),
 };
 const controls: Controls = {
   Button: props => <DialogButton {...props} />,

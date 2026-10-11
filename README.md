@@ -1,6 +1,6 @@
 # Legion Library 0.1.0
 
-A custom Decky Loader library page for SteamOS Gaming Mode on the Lenovo Legion Go S. This initial prototype is opened through the Decky quick-access panel. It offers a unified game grid, source filters, search, favorites, category editing, profile selection, and discovery status.
+A custom Decky Loader library page for SteamOS Gaming Mode on the Lenovo Legion Go S. This initial prototype is opened through the Decky quick-access panel. It offers a unified game grid, Steam/custom posters, source filters, search, favorites, category editing, profile selection, and discovery status.
 
 **Status:** compiled and tested locally with synthetic Steam fixtures and a desktop demo. Not yet tested inside SteamOS or on a Legion Go S. The native Home screen and Home button still work normally. Opening Legion Library is manual.
 
@@ -27,6 +27,12 @@ Steam discovery includes installed apps across the device; manifests do not esta
 6. Refresh after adding games or shortcuts. If Steam has not flushed a newly added shortcut to disk, restart Steam/Gaming Mode, then refresh again.
 7. Select a game card. Choose **Open Steam game page** and use Steam's **Play** button. This preserves Steam's controller configuration, launch choices, and compatibility workflow.
 
+To install or reinstall from a URL, use `https://github.com/dv-89/custom-library/releases/download/v0.1.0/legion-library-0.1.0.zip` in Decky's **Install Plugin from URL**. The October 11 update replaces the ZIP under the same 0.1.0 version; existing installations need to reinstall it to receive the changes. The source-code ZIP on GitHub is not the installable plugin.
+
+The page reserves 96 pixels at the top for Steam's performance header. In **Setup & status → Display & artwork**, adjust **Space for Steam / performance header** if your overlay needs more or less room. This space stays clear while the collection scrolls. Large performance panels can still overlap cards.
+
+Posters reuse artwork for the current Steam account, including custom images applied through **SteamGridDB**. Custom portrait and landscape artwork takes priority over Steam's cached and standard covers. After changing artwork, return here and press **Refresh**. Missing or broken images retain the colored cover and initials. No SteamGridDB API key is needed.
+
 You do not need Node.js or a Python installation on the handheld to install the ZIP; Decky supplies the plugin backend runtime. The plugin requests no root/debug flags and uses Python's standard library only.
 
 If your Decky version has no ZIP installer, extract the archive so its `legion-library/` folder is directly inside the actual Decky home directory's `plugins/` folder, then restart Decky or the device. Do not assume the SteamOS username is `deck`; use your device's actual Decky home path. Prefer Decky's installer to manual permission changes.
@@ -47,7 +53,7 @@ npm run preview
 
 Prerequisites: Node.js 22 LTS (or compatible newer Node), npm, and Python 3.11+ on PATH for tests/packaging. SteamOS/Decky supplies Python at runtime; no pip dependencies are required. The tested local environment used Node 24.18.0 and Python 3.12.14.
 
-The preview opens at `http://127.0.0.1:5173/`. It uses fictional sample titles and browser-only demo preferences. It does not inspect your Windows Steam installation or connect to your handheld. Preview controls use normal browser controls; the actual plugin uses Decky's Steam controller-aware components. `npm run preview:build` produces a static preview in `preview-dist/`, which is not part of the installed plugin.
+The preview opens at `http://127.0.0.1:5173/`. It uses fictional sample titles/posters and browser-only demo preferences, including missing/broken artwork examples. Add `?overlay` to simulate a performance header. It does not inspect your Windows Steam installation or connect to your handheld. Preview controls use normal browser controls; the actual plugin uses Decky's Steam controller-aware components. `npm run preview:build` produces a static preview in `preview-dist/`, which is not part of the installed plugin.
 
 `npm run package` creates the installable ZIP and a SHA-256 file under `release/`. The ZIP contains a single `legion-library/` root folder, frontend bundle, Python backend, licenses, documentation, and rebuildable source. `node_modules`, preview data, and test fixtures are excluded.
 
@@ -55,9 +61,9 @@ The preview opens at `http://127.0.0.1:5173/`. It uses fictional sample titles a
 
 Discovery starts when the library is opened or Refresh is pressed. It checks the Decky user's `.local/share/Steam`, `.steam/steam`, or `.steam/root`; reads `steamapps/libraryfolders.vdf` and installed `appmanifest_*.acf` files; then reads the selected `userdata/<profile>/config/shortcuts.vdf`. SD/external Steam libraries are followed only when listed by Steam. No recursive game-folder scan occurs. Individual files are limited to 16 MiB; up to 4,000 entries are displayed.
 
-Steam and shortcut files are read-only. Only `preferences.json` inside `decky.DECKY_PLUGIN_SETTINGS_DIR` is written, atomically. Preferences store favorites, category overrides, and a selected profile. Shortcut preference IDs include the profile and App ID, so equal game names remain separate. Steam favorites are shared across profiles. Entries disappearing from the library do not erase their preferences; deleting/recreating a shortcut can change its App ID and require favoriting it again.
+Steam and shortcut files are read-only. Only `preferences.json` inside `decky.DECKY_PLUGIN_SETTINGS_DIR` is written, atomically. Preferences store favorites, category overrides, a selected profile, and header spacing. Shortcut preference IDs include the profile and App ID, so equal game names remain separate. Steam favorites are shared across profiles. Entries disappearing from the library do not erase their preferences; deleting/recreating a shortcut can change its App ID and require favoriting it again.
 
-The interface uses local color covers and initials in this release. No artwork service or credentials are required. Account/profile auto-detection, real game artwork, custom collections, hide/reorder, direct Heroic/ROM adapters, and optional native-home integration are later improvements after device testing.
+Artwork resolves through optional Steam frontend methods. If those methods are missing, an App ID has no overview, or images fail to load, local color covers and initials remain available. Standard cover URLs may be fetched by Steam's browser when not cached, so artwork is not guaranteed offline. Artwork follows the account signed into Steam; choose the matching shortcut profile. Account/profile auto-detection, custom collections, hide/reorder, direct Heroic/ROM adapters, and optional native-home integration are later improvements after device testing.
 
 ## Testing and removal
 

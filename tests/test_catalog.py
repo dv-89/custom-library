@@ -171,6 +171,17 @@ class PreferenceTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 backend.validate_preferences(value)
 
+    def test_old_preferences_get_default_header_clearance(self):
+        self.assertEqual(backend.validate_preferences({"favorites": ["steam:42"]})["header_offset"], 96)
+
+    def test_header_clearance_is_validated_and_saved(self):
+        saved = asyncio.run(self.plugin.save_preferences({"header_offset": 144}))
+        self.assertEqual(saved["header_offset"], 144)
+        self.assertEqual(asyncio.run(self.plugin.get_catalog())["preferences"]["header_offset"], 144)
+        for offset in [-1, 241, "96", True, None]:
+            with self.assertRaises(ValueError):
+                backend.validate_preferences({"header_offset": offset})
+
     def test_corrupt_preferences_produce_warning(self):
         self.plugin._settings_path().write_text("bad json")
         result = asyncio.run(self.plugin.get_catalog())

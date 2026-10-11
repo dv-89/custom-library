@@ -11,11 +11,12 @@ from legion_catalog import SOURCES, discover
 
 
 def validate_preferences(value):
-    if not isinstance(value, dict) or set(value) - {"favorites", "overrides", "profile"}:
+    if not isinstance(value, dict) or set(value) - {"favorites", "overrides", "profile", "header_offset"}:
         raise ValueError("Invalid preference fields")
     favorites = value.get("favorites", [])
     overrides = value.get("overrides", {})
     profile = value.get("profile", "")
+    header_offset = value.get("header_offset", 96)
     key_pattern = r"(?:steam:[1-9]\d{0,9}|shortcut:\d{1,20}:[1-9]\d{0,9})"
     def valid_key(key):
         return isinstance(key, str) and re.fullmatch(key_pattern, key) is not None
@@ -25,7 +26,9 @@ def validate_preferences(value):
         raise ValueError("Invalid source overrides")
     if not isinstance(profile, str) or (profile and re.fullmatch(r"\d{1,20}", profile) is None):
         raise ValueError("Invalid Steam userdata profile")
-    return {"favorites": sorted(set(favorites)), "overrides": dict(overrides), "profile": profile}
+    if type(header_offset) is not int or not 0 <= header_offset <= 240:
+        raise ValueError("Header clearance must be an integer between 0 and 240")
+    return {"favorites": sorted(set(favorites)), "overrides": dict(overrides), "profile": profile, "header_offset": header_offset}
 
 
 class Plugin:

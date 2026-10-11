@@ -7,7 +7,7 @@
   "scripts": {
     "build": "rollup -c",
     "typecheck": "tsc --noEmit",
-    "test": "python -m unittest discover -s tests -v && node --test tests/model.test.mjs",
+    "test": "python -m unittest discover -s tests -v && node --test tests/model.test.mjs tests/artwork.test.mjs",
     "test:bundle": "node --test tests/bundle.test.mjs",
     "preview": "vite --host 127.0.0.1",
     "preview:build": "vite build",
